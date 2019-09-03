@@ -107,6 +107,56 @@ class Rectangle(Region):
         return patch
 
 
+class Ellipse(Region):
+    def __init__(self, xc, zc, radius_x, radius_z, units):
+        super().__init__()
+        self.radius_x = radius_x
+        self.radius_z = radius_z
+        self.xc = xc
+        self.zc = zc
+        self.area = np.pi * self.radius_x * self.radius_z
+        self.units = units
+
+    def create_mask(self, x_axis, z_axis):
+        """
+        Create a mask from a grid.
+
+        Parameters
+        ----------
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- (axial) coordinates
+        
+        Returns
+        -------
+        mask : ndarray
+
+        """
+
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
+
+        mask = np.sqrt( (x_grid - self.xc) ** 2 / self.radius_x ** 2
+            + (z_grid - self.zc) ** 2 / self.radius_z ** 2 )
+        mask = (mask <= 1)
+
+        return mask
+
+    def create_mpl_patch(self):
+        """Create a matplotlib patch for the region.
+
+        Returns
+        -------
+        patch : matplotlib patch
+
+        """
+
+        patch =  mpatches.Ellipse([ self.xc, self.zc] , width=2*self.radius_x,
+            height=2*self.radius_z,
+            edgecolor='red', facecolor="None" )
+        return patch
+
+
 class Circle(Region):
     def __init__(self, xc, zc, radius, units):
         super().__init__()

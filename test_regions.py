@@ -45,6 +45,43 @@ class TestCode(unittest.TestCase):
 
 
 
+    def test_Ellipse(self):
+        """Test Circle object"""
+
+        # test that object attributes are stored correctly
+        radius_x = 0.5
+        radius_z = 1
+        xc = 1
+        zc = 1
+        units = 'mm'
+        a_ellipse = regions.Ellipse(xc, zc, radius_x, radius_z, units)
+        self.assertEqual(a_ellipse.radius_x, radius_x)
+        self.assertEqual(a_ellipse.radius_z, radius_z)
+        self.assertEqual(a_ellipse.xc, xc)
+        self.assertEqual(a_ellipse.zc, zc)
+        self.assertEqual(a_ellipse.units, units)
+
+        # create a small grid
+        x_axis = np.linspace(0, 2, 5)
+        z_axis = np.linspace(0, 2, 5)
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
+
+        # test if the correct mask is produced
+        mask = a_ellipse.create_mask(x_axis, z_axis)
+        mask_actual = np.asarray([[False, False, True, False, False],
+                            [False, False,  True, False, False],
+                            [False,  True,  True,  True, False],
+                            [False, False,  True, False, False],
+                            [False, False, True, False, False]]
+        )
+        self.assertTrue( np.allclose(mask, mask_actual))
+
+        # extra values from an image
+        img = np.ones((5, 5))
+        region_values = a_ellipse.get_values_in_region(img, x_axis, z_axis)
+        region_values_actual = np.asarray([1, 1, 1, 1, 1, 1, 1])
+        self.assertTrue(np.allclose(region_values, region_values_actual))
+
     def test_Circle(self):
         """Test Circle object"""
 
