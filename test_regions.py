@@ -123,7 +123,7 @@ class TestCode(unittest.TestCase):
 
         # test that object attributes are stored correctly
         width = 1.5
-        height = 1
+        height = 2
         xc = 1
         zc = 1
         units = 'mm'
@@ -141,6 +141,43 @@ class TestCode(unittest.TestCase):
 
         # test if the correct mask is produced
         mask = a_rectangle.create_mask(x_axis, z_axis)
+        mask_actual = np.asarray([[False, True,  True, True, False],
+                            [False, True,  True, True, False],
+                            [False,  True,  True,  True, False],
+                            [False, True,  True, True, False],
+                            [False, True,  True, True, False]]
+        )
+        self.assertTrue( np.allclose(mask, mask_actual))
+
+
+        # extra values from an image
+        img = np.ones(x_grid.shape)
+        region_values = a_rectangle.get_values_in_region(img, x_axis, z_axis)
+        region_values_actual = np.ones(15)
+        self.assertTrue(np.allclose(region_values, region_values_actual))
+
+
+    def test_Square(self):
+        """Test Square object"""
+
+        # test that object attributes are stored correctly
+        length = 1
+        xc = 1
+        zc = 1
+        units = 'mm'
+        a_square = regions.Square(xc, zc, length, units)
+        self.assertEqual(a_square.length, length)
+        self.assertEqual(a_square.xc, xc)
+        self.assertEqual(a_square.zc, zc)
+        self.assertEqual(a_square.units, units)
+
+        # create a small 2d space
+        x_axis = np.linspace(0, 2, 5)
+        z_axis = np.linspace(0, 2, 5)
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
+
+        # test if the correct mask is produced
+        mask = a_square.create_mask(x_axis, z_axis)
         mask_actual = np.asarray([[False, False, False, False, False],
                             [False, True,  True, True, False],
                             [False,  True,  True,  True, False],
@@ -152,7 +189,7 @@ class TestCode(unittest.TestCase):
 
         # extra values from an image
         img = np.ones(x_grid.shape)
-        region_values = a_rectangle.get_values_in_region(img, x_axis, z_axis)
+        region_values = a_square.get_values_in_region(img, x_axis, z_axis)
         region_values_actual = np.ones(9)
         self.assertTrue(np.allclose(region_values, region_values_actual))
 

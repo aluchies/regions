@@ -53,6 +53,17 @@ class Region:
 
         return img[mask]
 
+    def create_mpl_patch(self):
+        """Create a matplotlib patch for the region.
+
+        Returns
+        -------
+        patch : matplotlib patch
+
+        """
+
+        return None
+
 
 
 class Rectangle(Region):
@@ -105,6 +116,11 @@ class Rectangle(Region):
             self.height,
             edgecolor='red', facecolor="None" )
         return patch
+
+class Square(Rectangle):
+    def __init__(self, xc, zc, length, units):
+        super().__init__(xc, zc, length, length, units)
+        self.length = length
 
 
 class Ellipse(Region):
