@@ -8,16 +8,16 @@ class Region:
     def __init__(self):
         pass
 
-    def create_mask(self, x_grid, z_grid):
+    def create_mask(self, x_axis, z_axis):
         """
         Create a mask from a grid.
 
         Parameters
         ----------
-        x_grid : ndarray
-            2D grid of x (lateral) coordinates
-        z_grid : ndarray
-            2D grid of z (axial) coordinates
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- coordinates
         
         Returns
         -------
@@ -25,12 +25,12 @@ class Region:
 
         """
 
-        mask = ( np.ones(x_grid.shape) == 1 )
+        mask = ( np.ones(z_axis.shape[0], x_axis.shape[0]) == 1 )
 
         return mask
 
 
-    def get_values_in_region(self, img, x_grid, z_grid):
+    def get_values_in_region(self, img, x_axis, z_axis):
         """
         Create a mask from a grid. The mask is added to the object.
 
@@ -38,10 +38,10 @@ class Region:
         ----------
         img : ndarray
             Extract values from this 2D image that are inside the region
-        x_grid : ndarray
-            2D grid of x (lateral) coordinates
-        z_grid : ndarray
-            2D grid of z (axial) coordinates
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- (axial) coordinates
         
         Returns
         -------
@@ -49,7 +49,7 @@ class Region:
 
         """
 
-        mask = self.create_mask(x_grid, z_grid)
+        mask = self.create_mask(x_axis, z_axis)
 
         return img[mask]
 
@@ -65,22 +65,24 @@ class Rectangle(Region):
         self.area = self.width * self.height
         self.units = units
 
-    def create_mask(self, x_grid, z_grid):
+    def create_mask(self, x_axis, z_axis):
         """
         Create a mask from a grid.
 
         Parameters
         ----------
-        x_grid : ndarray
-            2D grid of x (lateral) coordinates
-        z_grid : ndarray
-            2D grid of z (axial) coordinates
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- (axial) coordinates
         
         Returns
         -------
         mask : ndarray
 
         """
+
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
 
         mask_x = np.abs( x_grid - self.xc ) <= (self.width / 2)
         mask_z = np.abs( z_grid - self.zc ) <= (self.height / 2)
@@ -114,22 +116,24 @@ class Circle(Region):
         self.area = np.pi * self.radius**2
         self.units = units
 
-    def create_mask(self, x_grid, z_grid):
+    def create_mask(self, x_axis, z_axis):
         """
         Create a mask from a grid.
 
         Parameters
         ----------
-        x_grid : ndarray
-            2D grid of x (lateral) coordinates
-        z_grid : ndarray
-            2D grid of z (axial) coordinates
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- (axial) coordinates
         
         Returns
         -------
         mask : ndarray
 
         """
+
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
 
         mask = np.sqrt( (x_grid - self.xc) ** 2 + (z_grid - self.zc) ** 2 )
         mask = (mask <= self.radius)
@@ -144,6 +148,7 @@ class Circle(Region):
         patch : matplotlib patch
 
         """
+
         patch =  mpatches.Circle([ self.xc, self.zc] , self.radius,
             edgecolor='red', facecolor="None" )
         return patch
@@ -159,21 +164,23 @@ class Annulus(Region):
         self.area = np.pi * (self.radius_out ** 2 - self.radius_in ** 2)
         self.units = units
 
-    def create_mask(self, x_grid, z_grid):
+    def create_mask(self, x_axis, z_axis):
         """
         Return a mask from a grid
 
         Parameters
         ----------
-        x_grid : ndarray
-            Grid of x (lateral) coordinates
-        z_grid : ndarray
-            Grid of z (axial) coordinates
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- (axial) coordinates
 
         Returns
         -------
         mask : array_like
         """
+
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
 
         mask_out = np.sqrt( (x_grid - self.xc) ** 2 + (z_grid - self.zc) ** 2 )
         mask_out = (mask_out <= self.radius_out)
