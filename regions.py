@@ -2,17 +2,15 @@ import numpy as np
 import matplotlib.patches as mpatches
 
 
-class Circle:
-    def __init__(self, xc, zc, radius, units):
-        self.radius = radius
-        self.xc = xc
-        self.zc = zc
-        self.area = np.pi * self.radius**2
-        self.units = units
+class Region:
+    """Parent class for regions.
+    """
+    def __init__(self):
+        pass
 
     def create_mask(self, x_grid, z_grid):
         """
-        Create a mask from a grid. The mask is added to the object.
+        Create a mask from a grid.
 
         Parameters
         ----------
@@ -27,10 +25,10 @@ class Circle:
 
         """
 
-        mask = np.sqrt( (x_grid - self.xc) ** 2 + (z_grid - self.zc) ** 2 )
-        mask = (mask <= self.radius)
+        mask = ( np.ones(x_grid.shape) == 1 )
 
         return mask
+
 
     def get_values_in_region(self, img, x_grid, z_grid):
         """
@@ -56,6 +54,38 @@ class Circle:
         return img[mask]
 
 
+
+class Circle(Region):
+    def __init__(self, xc, zc, radius, units):
+        super().__init__()
+        self.radius = radius
+        self.xc = xc
+        self.zc = zc
+        self.area = np.pi * self.radius**2
+        self.units = units
+
+    def create_mask(self, x_grid, z_grid):
+        """
+        Create a mask from a grid.
+
+        Parameters
+        ----------
+        x_grid : ndarray
+            2D grid of x (lateral) coordinates
+        z_grid : ndarray
+            2D grid of z (axial) coordinates
+        
+        Returns
+        -------
+        mask : ndarray
+
+        """
+
+        mask = np.sqrt( (x_grid - self.xc) ** 2 + (z_grid - self.zc) ** 2 )
+        mask = (mask <= self.radius)
+
+        return mask
+
     def create_mpl_patch(self):
         """Create a matplotlib patch for the region.
 
@@ -69,8 +99,9 @@ class Circle:
         return patch
 
 
-class Annulus:
+class Annulus(Region):
     def __init__(self, xc, zc ,radius_in, radius_out, units):
+        super().__init__()
         self.radius_in = radius_in
         self.radius_out = radius_out
         self.xc = xc
@@ -103,29 +134,6 @@ class Annulus:
         mask = mask_out ^ mask_in
 
         return mask
-
-    def get_values_in_region(self, img, x_grid, z_grid):
-        """
-        Create a mask from a grid. The mask is added to the object.
-
-        Parameters
-        ----------
-        img : ndarray
-            Extract values from this 2D image that are inside the region
-        x_grid : ndarray
-            2D grid of x (lateral) coordinates
-        z_grid : ndarray
-            2D grid of z (axial) coordinates
-        
-        Returns
-        -------
-        values : 1D array of values
-
-        """
-
-        mask = self.create_mask(x_grid, z_grid)
-
-        return img[mask]
 
     def create_mpl_patch(self):
         """Create a matplotlib patch for the region.
