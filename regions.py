@@ -55,6 +55,56 @@ class Region:
 
 
 
+class Rectangle(Region):
+    def __init__(self, xc, zc, width, height, units):
+        super().__init__()
+        self.width = width
+        self.height = height
+        self.xc = xc
+        self.zc = zc
+        self.area = self.width * self.height
+        self.units = units
+
+    def create_mask(self, x_grid, z_grid):
+        """
+        Create a mask from a grid.
+
+        Parameters
+        ----------
+        x_grid : ndarray
+            2D grid of x (lateral) coordinates
+        z_grid : ndarray
+            2D grid of z (axial) coordinates
+        
+        Returns
+        -------
+        mask : ndarray
+
+        """
+
+        mask_x = np.abs( x_grid - self.xc ) <= (self.width / 2)
+        mask_z = np.abs( z_grid - self.zc ) <= (self.height / 2)
+
+        mask = mask_x * mask_z
+
+        return mask
+
+    def create_mpl_patch(self):
+        """Create a matplotlib patch for the region.
+
+        Returns
+        -------
+        patch : matplotlib patch
+
+        """
+        patch =  mpatches.Rectangle(
+            [ self.xc - self.width/2, self.zc - self.height/2],
+            self.width,
+            self.height,
+            edgecolor='red', facecolor="None" )
+        return patch
+
+
 class Circle(Region):
     def __init__(self, xc, zc, radius, units):
         super().__init__()

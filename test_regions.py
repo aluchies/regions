@@ -83,6 +83,46 @@ class TestCode(unittest.TestCase):
         self.assertTrue(np.allclose(region_values, region_values_actual))
 
 
+    def test_Rectangle(self):
+        """Test Rectangle object"""
+
+        # test that object attributes are stored correctly
+        width = 1.5
+        height = 1
+        xc = 1
+        zc = 1
+        units = 'mm'
+        a_rectangle = regions.Rectangle(xc, zc, width, height, units)
+        self.assertEqual(a_rectangle.width, width)
+        self.assertEqual(a_rectangle.height, height)
+        self.assertEqual(a_rectangle.xc, xc)
+        self.assertEqual(a_rectangle.zc, zc)
+        self.assertEqual(a_rectangle.units, units)
+
+        # create a small grid
+        x_grid, z_grid = np.meshgrid(
+            np.linspace(0, 2, 5),
+            np.linspace(0, 2, 5)
+        )
+
+        # test if the correct mask is produced
+        mask = a_rectangle.create_mask(x_grid, z_grid)
+        mask_actual = np.asarray([[False, False, False, False, False],
+                            [False, True,  True, True, False],
+                            [False,  True,  True,  True, False],
+                            [False, True,  True, True, False],
+                            [False, False, False, False, False]]
+        )
+        self.assertTrue( np.allclose(mask, mask_actual))
+
+
+        # extra values from an image
+        img = np.ones(x_grid.shape)
+        region_values = a_rectangle.get_values_in_region(img, x_grid, z_grid)
+        region_values_actual = np.ones(9)
+        self.assertTrue(np.allclose(region_values, region_values_actual))
+
+
 if __name__ == '__main__':
     print("Running unit tests for stft.py")
     unittest.main()
