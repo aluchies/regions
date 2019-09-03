@@ -157,51 +157,10 @@ class Ellipse(Region):
         return patch
 
 
-class Circle(Region):
+class Circle(Ellipse):
     def __init__(self, xc, zc, radius, units):
-        super().__init__()
+        super().__init__(xc, zc, radius, radius, units)
         self.radius = radius
-        self.xc = xc
-        self.zc = zc
-        self.area = np.pi * self.radius**2
-        self.units = units
-
-    def create_mask(self, x_axis, z_axis):
-        """
-        Create a mask from a grid.
-
-        Parameters
-        ----------
-        x_axis : ndarray
-            x- (lateral) coordinates
-        z_axis : ndarray
-            z- (axial) coordinates
-        
-        Returns
-        -------
-        mask : ndarray
-
-        """
-
-        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
-
-        mask = np.sqrt( (x_grid - self.xc) ** 2 + (z_grid - self.zc) ** 2 )
-        mask = (mask <= self.radius)
-
-        return mask
-
-    def create_mpl_patch(self):
-        """Create a matplotlib patch for the region.
-
-        Returns
-        -------
-        patch : matplotlib patch
-
-        """
-
-        patch =  mpatches.Circle([ self.xc, self.zc] , self.radius,
-            edgecolor='red', facecolor="None" )
-        return patch
 
 
 class Annulus(Region):
