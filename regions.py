@@ -38,7 +38,7 @@ class Circle:
 
         Parameters
         ----------
-        img : ndarary
+        img : ndarray
             Extract values from this 2D image that are inside the region
         x_grid : ndarray
             2D grid of x (lateral) coordinates
@@ -110,7 +110,7 @@ class Annulus:
 
         Parameters
         ----------
-        img : ndarary
+        img : ndarray
             Extract values from this 2D image that are inside the region
         x_grid : ndarray
             2D grid of x (lateral) coordinates
