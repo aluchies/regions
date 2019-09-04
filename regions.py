@@ -242,6 +242,18 @@ def create_region(**kwargs):
         del kwargs['type']
         return Circle(**kwargs)
 
+    elif kwargs['type'] == 'ellipse':
+        del kwargs['type']
+        return Ellipse(**kwargs)
+
+    elif kwargs['type'] == 'square':
+        del kwargs['type']
+        return Square(**kwargs)
+
+    elif kwargs['type'] == 'rectangle':
+        del kwargs['type']
+        return Rectangle(**kwargs)
+
     elif kwargs['type'] == 'annulus':
         del kwargs['type']
         return Annulus(**kwargs) 
