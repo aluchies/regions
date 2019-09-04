@@ -65,7 +65,6 @@ class Region:
         return None
 
 
-
 class Rectangle(Region):
     def __init__(self, xc, zc, width, height, units):
         super().__init__()
@@ -116,6 +115,7 @@ class Rectangle(Region):
             self.height,
             edgecolor='red', facecolor="None" )
         return patch
+
 
 class Square(Rectangle):
     def __init__(self, xc, zc, length, units):
@@ -230,6 +230,67 @@ class Annulus(Region):
             0, 360, self.radius_out - self.radius_in,
             edgecolor='red', facecolor="None" )
         return patch
+
+class Polygon(Region):
+    def __init__(self, vertices, units):
+        super().__init__()
+        self.vertices = vertices
+        self.units = units
+
+    def create_mask(self, x_axis, z_axis):
+        """
+        Create a mask from a grid.
+
+        Parameters
+        ----------
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- (axial) coordinates
+        
+        Returns
+        -------
+        mask : ndarray
+
+        """
+
+        # create patch for testing if points inside the region
+        # It seems like I should be able to call self.create_mpl_patch() here,
+        # but the returned patch did not have correct contains_points()
+        # behavior.
+        patch =  mpatches.Polygon(xy=self.vertices)
+
+        # create grid data
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
+
+        # reshape things
+        x_grid = np.reshape( x_grid, len(x_axis) * len(z_axis))
+        z_grid = np.reshape( z_grid, len(x_axis) * len(z_axis))
+
+        # need an Nx2 array of xz-coordinates for grid points
+        xy_grid = np.vstack([x_grid, z_grid]).transpose()
+
+        # test if points inside the patch
+        mask = patch.contains_points(xy_grid)
+
+        # reshape outputs
+        mask = np.reshape(mask, (len(z_axis), len(x_axis)))
+        x_grid = np.reshape(x_grid, (len(z_axis), len(x_axis)))
+        z_grid = np.reshape(z_grid, (len(z_axis), len(x_axis)))
+
+        return mask
+
+    def create_mpl_patch(self):
+        """Create a matplotlib patch for the region.
+
+        Returns
+        -------
+        patch : matplotlib patch
+
+        """
+        patch =  mpatches.Polygon(xy=self.vertices,
+            edgecolor='red', facecolor="None" )
+        return patch    
 
 
 def create_region(**kwargs):
