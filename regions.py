@@ -17,14 +17,15 @@ class Region:
         x_axis : ndarray
             x- (lateral) coordinates
         z_axis : ndarray
-            z- coordinates
+            z- (axial) coordinates
         
         Returns
         -------
-        mask : ndarray
+        mask : ndarray (boolean values)
 
         """
 
+        # For this region, return all values for the image
         mask = ( np.ones(z_axis.shape[0], x_axis.shape[0]) == 1 )
 
         return mask
@@ -88,7 +89,7 @@ class Rectangle(Region):
         
         Returns
         -------
-        mask : ndarray
+        mask : ndarray (boolean values)
 
         """
 
@@ -146,7 +147,7 @@ class Ellipse(Region):
         
         Returns
         -------
-        mask : ndarray
+        mask : ndarray (boolean values)
 
         """
 
@@ -250,7 +251,7 @@ class Polygon(Region):
         
         Returns
         -------
-        mask : ndarray
+        mask : ndarray (boolean values)
 
         """
 
@@ -294,9 +295,11 @@ class Polygon(Region):
 
 
 def create_region(**kwargs):
-    """Helper function for creating region objects
+    """Helper function for creating region objects.
     
-    Based on the type variable, this function creates a region object.
+    Pass in a dictionary of region parameters. Based on the `type` key, this 
+    function creates a region object based on the remaining dictionary keys.
+    If keys are missing for a region, the region creation will fail.
     """
 
     if kwargs['type'] == 'circle':
@@ -317,4 +320,8 @@ def create_region(**kwargs):
 
     elif kwargs['type'] == 'annulus':
         del kwargs['type']
-        return Annulus(**kwargs) 
+        return Annulus(**kwargs)
+
+    elif kwargs['type'] == 'polygon':
+        del kwargs['type']
+        return Polygon(**kwargs) 
