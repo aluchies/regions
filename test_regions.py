@@ -207,6 +207,7 @@ class TestCode(unittest.TestCase):
         a_polygon = regions.Polygon(vertices, units)
         self.assertTrue( np.allclose(a_polygon.vertices, vertices) )
         self.assertEqual(a_polygon.units, units)
+        self.assertTrue(np.allclose(a_polygon.area, 1.2*1.2))
 
         # create a small 2d space
         x_axis = np.linspace(0, 2, 5)
@@ -242,6 +243,8 @@ class TestCode(unittest.TestCase):
         a_polygon = regions.Polygon(vertices_file, units)
         self.assertTrue( np.allclose(a_polygon.vertices, vertices) )
         self.assertEqual(a_polygon.units, units)
+        self.assertTrue(np.allclose(a_polygon.area, 1.2*1.2))
+
 
         # create a small 2d space
         x_axis = np.linspace(0, 2, 5)

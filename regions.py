@@ -263,9 +263,17 @@ class Polygon(Region):
         if vertices.shape[1] != 2:
             raise ValueError("Vertices should have shape Nx2")
 
+        # compute area using shoelace formula
+        x = vertices[:, 0]
+        y = vertices[:, 1]
+        area = 1/2 * np.abs(
+            np.dot(x, np.roll(y,1) )
+            - np.dot(y,np.roll(x,1) )
+        )
 
         self.vertices = vertices
         self.units = units
+        self.area = area
 
     def create_mask(self, x_axis, z_axis):
         """
