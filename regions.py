@@ -234,7 +234,36 @@ class Annulus(Region):
 
 class Polygon(Region):
     def __init__(self, vertices, units):
+        """Initialize polygon
+
+        Parameters
+        ----------
+        vertices : ndarray OR str
+            Nx2 array OR string containing filename for Nx2 array
+        units : str
+            units of the vertices
+        """
+
         super().__init__()
+
+
+        if type(vertices) == str:
+            with open(vertices, 'r') as f:
+                lines = f.read().splitlines()
+            vertices = [line.split(',') for line in lines]
+            vertices = np.asarray(vertices).astype(float)
+        else:
+            vertices = np.asarray(vertices)
+
+        # verify that vertices has correct shape
+        vertices = np.squeeze(vertices)
+        if len(vertices.shape) != 2:
+            raise ValueError("Vertices should be a 2D array")
+
+        if vertices.shape[1] != 2:
+            raise ValueError("Vertices should have shape Nx2")
+
+
         self.vertices = vertices
         self.units = units
 

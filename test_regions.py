@@ -193,7 +193,7 @@ class TestCode(unittest.TestCase):
         region_values_actual = np.ones(9)
         self.assertTrue(np.allclose(region_values, region_values_actual))
 
-    def test_Polygon(self):
+    def test_Polygon_1(self):
         """Test Polygon object"""
 
         # test that object attributes are stored correctly
@@ -229,6 +229,40 @@ class TestCode(unittest.TestCase):
         region_values_actual = np.ones(9)
         self.assertTrue(np.allclose(region_values, region_values_actual))
 
+    def test_Polygon_2(self):
+        """Test Polygon object with vertices file"""
+        vertices_file = 'test_vertices.txt'
+        vertices = np.asarray([
+            [0.4, 0.4],
+            [1.6, 0.4],
+            [1.6, 1.6],
+            [0.4, 1.6]
+        ])
+        units = 'mm'
+        a_polygon = regions.Polygon(vertices_file, units)
+        self.assertTrue( np.allclose(a_polygon.vertices, vertices) )
+        self.assertEqual(a_polygon.units, units)
+
+        # create a small 2d space
+        x_axis = np.linspace(0, 2, 5)
+        z_axis = np.linspace(0, 2, 5)
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
+
+        # test if the correct mask is produced
+        mask = a_polygon.create_mask(x_axis, z_axis)
+        mask_actual = np.asarray([[False, False, False, False, False],
+                            [False, True,  True, True, False],
+                            [False,  True,  True,  True, False],
+                            [False, True,  True, True, False],
+                            [False, False, False, False, False]]
+        )
+        self.assertTrue( np.allclose(mask, mask_actual))
+
+        # extra values from an image
+        img = np.ones(x_grid.shape)
+        region_values = a_polygon.get_values_in_region(img, x_axis, z_axis)
+        region_values_actual = np.ones(9)
+        self.assertTrue(np.allclose(region_values, region_values_actual))
 
 if __name__ == '__main__':
     print("Running unit tests for stft.py")
