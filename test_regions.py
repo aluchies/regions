@@ -245,7 +245,6 @@ class TestCode(unittest.TestCase):
         self.assertEqual(a_polygon.units, units)
         self.assertTrue(np.allclose(a_polygon.area, 1.2*1.2))
 
-
         # create a small 2d space
         x_axis = np.linspace(0, 2, 5)
         z_axis = np.linspace(0, 2, 5)
@@ -266,6 +265,81 @@ class TestCode(unittest.TestCase):
         region_values = a_polygon.get_values_in_region(img, x_axis, z_axis)
         region_values_actual = np.ones(9)
         self.assertTrue(np.allclose(region_values, region_values_actual))
+
+
+    def test_RegionUnion(self):
+        xc = 0.5
+        zc = 0.5
+        length = 1
+        units = 'mm'
+        a_square = regions.Square(xc, zc, length, units)
+
+        xc = 1
+        zc = 1
+        radius = 1
+        units = 'mm'
+        a_circle = regions.Circle(xc, zc, radius, units)
+        a_region_list = [a_square, a_circle]
+        a_region_union = regions.RegionUnion(a_region_list)
+
+        # create a small 2d space
+        x_axis = np.linspace(0, 2, 5)
+        z_axis = np.linspace(0, 2, 5)
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
+
+        # test if the correct mask is produced
+        mask = a_region_union.create_mask(x_axis, z_axis)
+        mask_actual = np.asarray([[ True,  True,  True, False, False],
+                                    [ True,  True,  True,  True, False],
+                                    [ True,  True,  True,  True,  True],
+                                    [False,  True,  True,  True, False],
+                                    [False, False,  True, False, False]])
+        self.assertTrue( np.allclose(mask, mask_actual))
+
+        # get values from an image
+        img = np.ones(x_grid.shape)
+        region_values = a_region_union.get_values_in_region(img, x_axis, z_axis)
+        region_values_actual = np.ones(16)
+        self.assertTrue(np.allclose(region_values, region_values_actual))
+
+
+
+    def test_RegionIntersect(self):
+        xc = 0.5
+        zc = 0.5
+        length = 1
+        units = 'mm'
+        a_square = regions.Square(xc, zc, length, units)
+
+        xc = 1
+        zc = 1
+        radius = 1
+        units = 'mm'
+        a_circle = regions.Circle(xc, zc, radius, units)
+        a_region_list = [a_square, a_circle]
+        a_region_intersect = regions.RegionIntersect(a_region_list)
+
+        # create a small 2d space
+        x_axis = np.linspace(0, 2, 5)
+        z_axis = np.linspace(0, 2, 5)
+        x_grid, z_grid = np.meshgrid( x_axis, z_axis )
+
+        # test if the correct mask is produced
+        mask = a_region_intersect.create_mask(x_axis, z_axis)
+        mask_actual = np.asarray([[False, False,  True, False, False],
+                                    [False,  True,  True, False, False],
+                                    [ True,  True,  True, False, False],
+                                    [False, False, False, False, False],
+                                    [False, False, False, False, False]])
+        self.assertTrue( np.allclose(mask, mask_actual))
+
+        # get values from an image
+        img = np.ones(x_grid.shape)
+        region_values = a_region_intersect.get_values_in_region(img, x_axis, z_axis)
+        region_values_actual = np.ones(6)
+        self.assertTrue(np.allclose(region_values, region_values_actual))
+
+
 
 if __name__ == '__main__':
     print("Running unit tests for stft.py")

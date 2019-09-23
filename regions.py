@@ -331,6 +331,106 @@ class Polygon(Region):
         return patch    
 
 
+
+class RegionUnion(Region):
+    def __init__(self, region_list):
+        """
+        """
+        # make sure all regions in the list inherit from Region class
+        for region in region_list:
+            if not issubclass(type(region), Region):
+                raise ValueError('region_list includes a non-Region object.')
+        self.region_list = region_list
+
+    def create_mask(self, x_axis, z_axis):
+        """
+        Create a mask from a grid.
+
+        Parameters
+        ----------
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- (axial) coordinates
+        
+        Returns
+        -------
+        mask : ndarray (boolean values)
+
+        """
+
+        mask_list = []
+        for region in self.region_list:
+            mask_list.append(region.create_mask(x_axis, z_axis))
+
+        # combine masks
+        mask = np.sum( np.asarray(mask_list), axis=0, keepdims=False).astype(bool)
+
+        return mask
+
+
+    def create_mpl_patch(self):
+        """
+        """
+        patch_list = []
+        for region in self.region_list:
+            patch_list.append( region.create_mpl_patch() )
+
+        return patch_list
+
+
+
+class RegionIntersect(Region):
+    def __init__(self, region_list):
+        """
+        """
+        # make sure all regions in the list inherit from Region class
+        for region in region_list:
+            if not issubclass(type(region), Region):
+                raise ValueError('region_list includes a non-Region object.')
+        self.region_list = region_list
+
+    def create_mask(self, x_axis, z_axis):
+        """
+        Create a mask from a grid.
+
+        Parameters
+        ----------
+        x_axis : ndarray
+            x- (lateral) coordinates
+        z_axis : ndarray
+            z- (axial) coordinates
+        
+        Returns
+        -------
+        mask : ndarray (boolean values)
+
+        """
+
+        mask_list = []
+        for region in self.region_list:
+            mask_list.append(region.create_mask(x_axis, z_axis))
+
+        # combine masks
+        mask = np.prod( np.asarray(mask_list), axis=0, keepdims=False).astype(bool)
+        
+        return mask
+
+
+    def create_mpl_patch(self):
+        """
+        """
+        patch_list = []
+        for region in self.region_list:
+            patch_list.append( region.create_mpl_patch() )
+
+        return patch_list
+
+
+
+
+
+
 def create_region(**kwargs):
     """Helper function for creating region objects.
     
